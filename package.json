@@ -1,0 +1,12 @@
+{
+  "name": "rk-teleprompter-pro-v3",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Offline-first Smart Connect-friendly teleprompter",
+  "scripts": {
+    "check:syntax": "node --check js/app.js",
+    "check:static": "node scripts/check.mjs",
+    "check": "npm run check:syntax && npm run check:static",
+    "serve": "python -m http.server 8080"
+  }
+}

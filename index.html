@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Offline-first teleprompter for Android tablets, Smart Connect, Bluetooth remotes, keyboards and gamepads.">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#080a0f">
+<title>RK Teleprompter Pro V3 — Smart Connect Edition</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app" id="setupApp">
+<header class="topbar">
+  <div class="brand"><div class="logo">RK</div><div><h1>RK Teleprompter Pro V3</h1><small>Smart Connect Edition · Offline-first single file</small></div></div>
+  <div class="statuses"><span class="badge ok" id="autosaveBadge">Auto-save ready</span><span class="badge" id="wakeBadge">Wake lock: standby</span><span class="badge" id="inputBadge">Remote: waiting</span></div>
+</header>
+<main>
+<section class="card">
+  <div class="section-title"><h2>1. Script workspace</h2><span class="subtle" id="draftStatus">Recovered locally</span></div>
+  <div class="row" style="margin-bottom:8px"><input class="grow" id="scriptTitle" type="text" placeholder="Script title / production name"><button class="btn small" id="newScriptBtn">New</button><button class="btn small good" id="saveLibraryBtn">Save to Library</button></div>
+  <textarea id="scriptInput" spellcheck="true" aria-label="Teleprompter script"></textarea>
+  <div class="stats"><span class="stat">Words: <b id="wordCount">0</b></span><span class="stat">Characters: <b id="charCount">0</b></span><span class="stat">Estimated: <b id="estimatedTime">00:00</b></span><span class="stat">Marks: <b id="markCount">0</b></span></div>
+  <div class="toolbar">
+    <button class="btn primary" id="startBtn">▶ Start Prompt</button>
+    <button class="btn" data-insert="<<mark:SECTION>>">+ Mark</button><button class="btn" data-insert="<<pause:2>>">+ Timed Pause</button><button class="btn" data-insert="<<pause>>">+ Manual Pause</button><button class="btn" data-insert="<<cue:SMILE>>">+ Cue</button>
+    <button class="btn" id="importBtn">Import</button><button class="btn" id="exportTxtBtn">Export TXT</button><button class="btn" id="exportJsonBtn">Backup JSON</button>
+    <input id="fileInput" type="file" accept=".txt,.md,.json,.tp.json,text/plain,application/json" hidden>
+  </div>
+  <details style="margin-top:10px"><summary>Marker syntax and examples</summary><div class="help-grid">
+    <div class="help-item"><span class="code">&lt;&lt;mark:INTRO&gt;&gt;</span><br>Named navigation point.</div>
+    <div class="help-item"><span class="code">&lt;&lt;pause:2.5&gt;&gt;</span><br>Pause, then resume automatically.</div>
+    <div class="help-item"><span class="code">&lt;&lt;pause&gt;&gt;</span><br>Pause until you resume manually.</div>
+    <div class="help-item"><span class="code">&lt;&lt;speed:75&gt;&gt;</span><br>Set pixels per second.</div>
+    <div class="help-item"><span class="code">&lt;&lt;wpm:135&gt;&gt;</span><br>Set words per minute.</div>
+    <div class="help-item"><span class="code">&lt;&lt;cue:LOOK AT CAMERA&gt;&gt;</span><br>Temporary performance cue.</div>
+    <div class="help-item"><span class="code">&lt;&lt;countdown:3&gt;&gt;</span><br>Mid-script countdown, then continue.</div>
+  </div></details>
+</section>
+
+<section class="card">
+  <div class="section-title"><h2>2. Display and reading line</h2><span class="subtle">Optimised for beam-splitter glass</span></div>
+  <div class="grid2">
+    <div class="field"><label>Font size <output id="fontSizeOut">58 px</output></label><input id="fontSize" type="range" min="26" max="180" value="58"></div>
+    <div class="field"><label>Line height <output id="lineHeightOut">1.48</output></label><input id="lineHeight" type="range" min="1.10" max="2.20" step="0.02" value="1.48"></div>
+    <div class="field"><label>Text width <output id="textWidthOut">82%</output></label><input id="textWidth" type="range" min="38" max="98" value="82"></div>
+    <div class="field"><label>Reading-line position <output id="guidePosOut">43%</output></label><input id="guidePos" type="range" min="22" max="72" value="43"></div>
+    <div class="field"><label>Font weight <output id="fontWeightOut">600</output></label><input id="fontWeight" type="range" min="400" max="800" step="100" value="600"></div>
+    <div class="field"><label>Screen dim overlay <output id="dimOut">0%</output></label><input id="dimLevel" type="range" min="0" max="72" value="0"></div>
+  </div>
+  <div class="grid3" style="margin-top:10px">
+    <div class="field"><label>Alignment</label><select id="textAlign"><option value="left">Left</option><option value="center" selected>Centre</option><option value="right">Right</option></select></div>
+    <div class="field"><label>Text colour</label><input id="textColor" type="color" value="#ffffff"></div>
+    <div class="field"><label>Background</label><input id="bgColor" type="color" value="#000000"></div>
+  </div>
+  <div class="toolbar"><button class="btn active" id="mirrorBtn">Mirror X: ON</button><button class="btn" id="flipYBtn">Flip Y: OFF</button><button class="btn active" id="guideBtn">Guide: ON</button><button class="btn active" id="hudBtn">HUD: ON</button><button class="btn" id="resetDisplayBtn">Reset display</button></div>
+  <p class="subtle">“Dim” darkens the web page but cannot directly change the tablet’s hardware brightness. Set Android brightness separately for the final reflection level.</p>
+</section>
+
+<section class="card">
+  <div class="section-title"><h2>3. Pace, start and recording</h2><span class="subtle">WPM is usually easier to rehearse consistently</span></div>
+  <div class="grid2">
+    <div class="field"><label>Pace mode</label><select id="paceMode"><option value="wpm" selected>Words per minute</option><option value="px">Pixels per second</option></select></div>
+    <div class="field"><label id="paceLabel">Target WPM <output id="paceOut">135</output></label><input id="paceValue" type="range" min="60" max="240" value="135"></div>
+    <div class="field"><label>Pace step <output id="paceStepOut">5</output></label><input id="paceStep" type="range" min="1" max="20" value="5"></div>
+    <div class="field"><label>Nudge distance <output id="jumpSecondsOut">2.0 sec</output></label><input id="jumpSeconds" type="range" min="0.5" max="10" step="0.5" value="2"></div>
+    <div class="field"><label>Start countdown <output id="countdownOut">3 sec</output></label><input id="startCountdown" type="range" min="0" max="10" value="3"></div>
+    <div class="field"><label>Voice-command language</label><select id="voiceLang"><option value="en-IN">English (India)</option><option value="te-IN">Telugu</option><option value="hi-IN">Hindi</option></select></div>
+  </div>
+  <div class="grid3" style="margin-top:10px"><div class="field"><label>Production</label><input id="production" type="text" placeholder="RK Video"></div><div class="field"><label>Scene</label><input id="scene" type="text" placeholder="1"></div><div class="field"><label>Take</label><input id="take" type="number" min="1" value="1"></div></div>
+  <div class="toolbar"><button class="btn" id="voiceBtn">🎙 Start voice control</button><button class="btn" id="orientationBtn">Landscape lock: AUTO</button><button class="btn active" id="touchGestureBtn">Touch gestures: ON</button><button class="btn active" id="wakeLockBtn">Keep screen awake: ON</button></div>
+  <p class="subtle">Touch/Smart Connect gestures in prompt mode: tap = play/pause; swipe left/right = previous/next mark; swipe up/down = faster/slower; mouse wheel = manual nudge; Shift + wheel = pace adjustment.</p>
+</section>
+
+<section class="card">
+  <div class="section-title"><h2>4. Script library and recovery</h2><span class="subtle">Stored only in this browser on this device</span></div>
+  <div class="library-list" id="libraryList"><div class="library-item"><div><strong>No saved scripts yet</strong><small>Use “Save to Library”.</small></div></div></div>
+  <div class="toolbar"><button class="btn" id="exportAllBtn">Export all scripts</button><button class="btn danger" id="clearLibraryBtn">Clear library</button></div>
+</section>
+
+<section class="card span2">
+  <div class="section-title"><h2>5. Remote, keyboard and joystick setup</h2><span class="subtle">Designed for Lenovo Smart Connect, Bluetooth HID remotes and gamepads</span></div>
+  <div class="grid2">
+    <div>
+      <details open><summary>Keyboard / Smart Connect shortcuts</summary><table class="mapping"><thead><tr><th>Action</th><th>Assigned input</th><th></th></tr></thead><tbody id="keyMappingBody"></tbody></table><div class="toolbar"><button class="btn small" id="resetKeysBtn">Reset key mappings</button></div></details>
+    </div>
+    <div>
+      <details open><summary>Remote input tester</summary><p class="subtle">Click inside this page, then press a remote button or move the joystick.</p><div class="help-grid"><div class="help-item">Last keyboard code<br><b class="code" id="lastKey">—</b></div><div class="help-item">Gamepad<br><b class="code" id="gamepadName">Not detected</b></div><div class="help-item">Last gamepad button<br><b class="code" id="lastGamepadButton">—</b></div><div class="help-item">Axes<br><b class="code" id="axisReadout">—</b></div></div></details>
+      <details><summary>Gamepad button mapping</summary><div class="row" style="margin-top:10px"><select class="grow" id="gamepadAction"></select><button class="btn" id="learnGamepadBtn">Learn next button</button><button class="btn danger" id="resetGamepadBtn">Reset</button></div><div id="gamepadMappings" class="subtle" style="margin-top:9px">No custom gamepad mappings.</div></details>
+    </div>
+  </div>
+  <details style="margin-top:10px"><summary>Smart Connect usage notes</summary><div class="help-grid"><div class="help-item"><b>Laptop control:</b> stream/control the tablet, click the teleprompter page, then use the configured keys.</div><div class="help-item"><b>Mouse/touchpad:</b> wheel nudges the script. Hold Shift while scrolling to change pace.</div><div class="help-item"><b>Clipboard:</b> prepare the script on the laptop and paste it into the tablet through cross-device clipboard.</div><div class="help-item"><b>Clean reflection:</b> press H to hide the HUD and dock after starting.</div></div></details>
+</section>
+</main>
+<footer><span>RK Teleprompter Pro V3 · Local/offline · No analytics or cloud upload</span><span>Tip: keep a JSON backup before resetting Chrome or changing tablets.</span></footer>
+</div>
+
+<section id="promptScreen" class="hidden mirror-x" aria-label="Teleprompter prompt screen">
+  <div id="promptViewport"><div id="promptTrack"><div id="promptContent"></div></div></div>
+  <div id="guideBand"></div><div id="dimLayer"></div><div id="progress"><div id="progressFill"></div></div>
+  <div id="cueToast"></div><div id="countdownOverlay" class="hidden">3</div>
+  <div id="controlDock"><button class="dockbtn" data-action="prevMark" title="Previous mark">⏮</button><button class="dockbtn" data-action="nudgeBack" title="Nudge back">−</button><button class="dockbtn play wide" data-action="playPause" id="dockPlay">▶ Play</button><button class="dockbtn" data-action="nudgeForward" title="Nudge forward">+</button><button class="dockbtn" data-action="nextMark" title="Next mark">⏭</button><button class="dockbtn" data-action="slower" title="Slower">🐢</button><button class="dockbtn" data-action="faster" title="Faster">⚡</button><button class="dockbtn" data-action="toggleHud" title="Hide controls">H</button></div>
+  <button id="exitBtn" title="Exit prompt">×</button>
+  <div id="slateBox"><span class="rec-dot"></span><span id="elapsed">00:00</span> · <b id="slateText">RK · S1 · T1</b></div>
+  <div id="promptHud"><div class="hudcluster"><span class="pill">Pace <b id="hudPace">135 WPM</b></span><span class="pill">Progress <b id="hudProgress">0%</b></span><span class="pill desktop-extra">Remaining <b id="hudRemaining">--:--</b></span></div><div class="hudcluster"><span class="pill" id="playState">PAUSED</span><span class="pill desktop-extra">Mark <b id="hudMark">Start</b></span></div></div>
+</section>
+
+<script src="js/app.js"></script>
+</body>
+</html>
